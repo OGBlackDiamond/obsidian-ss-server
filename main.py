@@ -1,7 +1,7 @@
 
 import asyncio
 import websockets.server
-from websockets.server import ServerConnection
+from websockets.sync.server import ServerConnection
 
 from util.config_util import ConfigUtil
 
@@ -22,13 +22,20 @@ class Main:
         
 
     async def handle_connect(self, connection: ServerConnection):
-        pass
+        print("Connection Established")
+        test = await connection.recv()
+        print(test)
+        await connection.send("test")
+        await connection.close()
 
 
     def main(self):
-        start_server = websockets.server.serve(self.handle_connect, HOST, PORT, ssl=None, compression=None)  # type: ignore
+        start_server = websockets.server.serve(self.handle_connect, self.HOST, self.PORT, ssl=None, compression=None)  # type: ignore
         print("STARTING SERVER")
 
         asyncio.get_event_loop().run_until_complete(start_server)
         asyncio.get_event_loop().run_forever()
+
+main = Main()
+main.main()
 
